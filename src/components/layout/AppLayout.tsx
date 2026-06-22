@@ -7,10 +7,12 @@ import { Input } from "@/components/ui/input";
 
 const routeNames: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/input": "Input Data",
-  "/analisis": "Analisis Sentimen",
-  "/komentar": "Data Komentar",
-  "/hasil": "Hasil Klasifikasi",
+  "/input-data": "Input Data",
+  "/analisis-sentimen": "Analisis Sentimen",
+  "/data-komentar": "Data Komentar",
+  "/hasil-klasifikasi": "Hasil Klasifikasi",
+  "/evaluasi-model": "Evaluasi Model",
+  "/testing": "Testing",
   "/laporan": "Laporan",
   "/pengaturan": "Pengaturan",
 };

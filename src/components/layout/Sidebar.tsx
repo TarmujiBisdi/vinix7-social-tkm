@@ -1,16 +1,18 @@
 import { NavLink, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, Upload, Brain, MessageSquare, Tags, FileText, Settings as SettingsIcon, LogOut, Sparkles,
+  LayoutDashboard, Upload, Brain, MessageSquare, Tags, FileText, Settings as SettingsIcon, LogOut, Sparkles, Gauge, FlaskConical,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/input", label: "Input Data", icon: Upload },
-  { to: "/analisis", label: "Analisis Sentimen", icon: Brain },
-  { to: "/komentar", label: "Data Komentar", icon: MessageSquare },
-  { to: "/hasil", label: "Hasil Klasifikasi", icon: Tags },
+  { to: "/input-data", label: "Input Data", icon: Upload },
+  { to: "/analisis-sentimen", label: "Analisis Sentimen", icon: Brain },
+  { to: "/data-komentar", label: "Data Komentar", icon: MessageSquare },
+  { to: "/hasil-klasifikasi", label: "Hasil Klasifikasi", icon: Tags },
+  { to: "/evaluasi-model", label: "Evaluasi Model", icon: Gauge },
+  { to: "/testing", label: "Testing", icon: FlaskConical },
   { to: "/laporan", label: "Laporan", icon: FileText },
   { to: "/pengaturan", label: "Pengaturan", icon: SettingsIcon },
 ];

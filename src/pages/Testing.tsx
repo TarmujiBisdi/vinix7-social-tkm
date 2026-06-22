@@ -1,18 +1,21 @@
 import { useState } from "react";
-import { classifyComment } from "@/lib/store";
+import { classifyComment, getSettings } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { SentimentBadge } from "@/components/SentimentBadge";
 import { FlaskConical, Sparkles } from "lucide-react";
+import type { Sentiment } from "@/lib/types";
+
+type TestResult = { sentiment: Sentiment; score: number; cleaned: string };
 
 const Testing = () => {
   const [text, setText] = useState("");
-  const [result, setResult] = useState<{ sentiment: string; confidence: number } | null>(null);
-  const [history, setHistory] = useState<{ text: string; sentiment: string; confidence: number }[]>([]);
+  const [result, setResult] = useState<TestResult | null>(null);
+  const [history, setHistory] = useState<(TestResult & { text: string })[]>([]);
 
   const run = () => {
     if (!text.trim()) return;
-    const r = classifyComment(text);
+    const r = classifyComment(text, getSettings());
     setResult(r);
     setHistory((h) => [{ text, ...r }, ...h].slice(0, 10));
   };
@@ -42,9 +45,10 @@ const Testing = () => {
           <div className="rounded-lg border bg-secondary/40 p-4 animate-fade-in">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Hasil Prediksi</p>
             <div className="flex items-center gap-3">
-              <SentimentBadge sentiment={result.sentiment as any} />
-              <span className="text-sm text-muted-foreground">Confidence: <span className="font-bold text-foreground">{(result.confidence * 100).toFixed(1)}%</span></span>
+              <SentimentBadge s={result.sentiment} />
+              <span className="text-sm text-muted-foreground">Skor: <span className="font-bold text-foreground">{result.score.toFixed(2)}</span></span>
             </div>
+            <p className="text-xs text-muted-foreground mt-2">Teks setelah preprocessing: <span className="italic">"{result.cleaned}"</span></p>
           </div>
         )}
       </div>
@@ -57,8 +61,8 @@ const Testing = () => {
               <div key={i} className="flex items-start justify-between gap-3 rounded-lg border p-3">
                 <p className="text-sm flex-1">{h.text}</p>
                 <div className="flex items-center gap-2 shrink-0">
-                  <SentimentBadge sentiment={h.sentiment as any} />
-                  <span className="text-xs text-muted-foreground">{(h.confidence * 100).toFixed(0)}%</span>
+                  <SentimentBadge s={h.sentiment} />
+                  <span className="text-xs text-muted-foreground">{h.score.toFixed(2)}</span>
                 </div>
               </div>
             ))}
