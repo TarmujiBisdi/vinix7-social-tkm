@@ -117,7 +117,7 @@ const Analysis = () => {
           </div>
           <p className="text-xs text-muted-foreground mt-4 italic">* Metrik akurasi, precision, recall & F1 ditampilkan sebagai simulasi representasi model Naive Bayes pada prototype ini.</p>
           <div className="mt-5 flex flex-col sm:flex-row gap-3">
-            <Button onClick={() => nav("/hasil")} className="bg-gradient-primary text-white">
+            <Button onClick={() => nav("/hasil-klasifikasi")} className="bg-gradient-primary text-white">
               Lihat Hasil Klasifikasi <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
             <Button variant="outline" onClick={() => nav("/laporan")}>Buka Laporan</Button>
