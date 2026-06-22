@@ -18,9 +18,11 @@ const routeNames: Record<string, string> = {
 };
 
 export const AppLayout = ({ children }: { children: ReactNode }) => {
-  const { user } = useAuth();
+  const { user, isAuthReady } = useAuth();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
+
+  if (!isAuthReady) return null;
   if (!user) return <Navigate to="/login" replace />;
   const title = routeNames[pathname] ?? "Dashboard";
 
