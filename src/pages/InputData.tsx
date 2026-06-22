@@ -114,7 +114,7 @@ const InputData = () => {
             <Button type="submit" className="bg-gradient-primary text-white">
               <Save className="h-4 w-4 mr-2" /> Simpan Data
             </Button>
-            <Button type="button" variant="outline" onClick={() => nav("/analisis")}>
+            <Button type="button" variant="outline" onClick={() => nav("/analisis-sentimen")}>
               Lanjut Analisis <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>

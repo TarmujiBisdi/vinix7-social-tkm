@@ -13,10 +13,10 @@ import Comments from "./pages/Comments";
 import Results from "./pages/Results";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound.tsx";
+import EvaluasiModel from "./pages/EvaluasiModel";
+import Testing from "./pages/Testing";
 
 const queryClient = new QueryClient();
-
 const wrap = (el: React.ReactNode) => <AppLayout>{el}</AppLayout>;
 
 const App = () => (
@@ -27,16 +27,18 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={wrap(<Dashboard />)} />
-            <Route path="/input" element={wrap(<InputData />)} />
-            <Route path="/analisis" element={wrap(<Analysis />)} />
-            <Route path="/komentar" element={wrap(<Comments />)} />
-            <Route path="/hasil" element={wrap(<Results />)} />
+            <Route path="/input-data" element={wrap(<InputData />)} />
+            <Route path="/analisis-sentimen" element={wrap(<Analysis />)} />
+            <Route path="/data-komentar" element={wrap(<Comments />)} />
+            <Route path="/hasil-klasifikasi" element={wrap(<Results />)} />
+            <Route path="/evaluasi-model" element={wrap(<EvaluasiModel />)} />
+            <Route path="/testing" element={wrap(<Testing />)} />
             <Route path="/laporan" element={wrap(<Reports />)} />
             <Route path="/pengaturan" element={wrap(<Settings />)} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
