@@ -1,6 +1,6 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { Sidebar } from "./Sidebar";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { ChevronRight, Menu, Bell, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ const routeNames: Record<string, string> = {
   "/pengaturan": "Pengaturan",
 };
 
-export const AppLayout = ({ children }: { children: ReactNode }) => {
+export const AppLayout = () => {
   const { user, isAuthReady } = useAuth();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
@@ -69,12 +69,12 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
             </div>
           </div>
         </header>
-        <main className="flex-1 p-4 lg:p-8 animate-fade-in">
+        <main className="flex-1 p-4 lg:p-8">
           <div className="mb-6">
             <h1 className="text-2xl lg:text-3xl font-bold text-foreground">{title}</h1>
             <p className="text-sm text-muted-foreground mt-1">PT Vinix Seven Aurum • Social Media Sentiment Analysis</p>
           </div>
-          {children}
+          <Outlet />
         </main>
       </div>
     </div>
