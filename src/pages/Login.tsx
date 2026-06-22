@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const Login = () => {
-  const { user, login } = useAuth();
+  const { user, isAuthReady, login } = useAuth();
   const nav = useNavigate();
   const [email, setEmail] = useState("admin@vinixsevenaurum.co.id");
   const [password, setPassword] = useState("demo1234");
   const [role, setRole] = useState<"Admin" | "Stakeholder">("Admin");
 
+  if (!isAuthReady) return null;
   if (user) return <Navigate to="/dashboard" replace />;
 
   const submit = (e: React.FormEvent) => {
