@@ -222,6 +222,7 @@ const InputData = () => {
         )}
       </div>
     </div>
+    </div>
   );
 };
 
