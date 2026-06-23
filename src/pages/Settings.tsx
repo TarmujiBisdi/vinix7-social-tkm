@@ -6,9 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Building2, KeyRound, Sparkles, Save, Plug, Info } from "lucide-react";
+import { Building2, KeyRound, Sparkles, Save, Plug, Info, Loader2, CheckCircle2, XCircle, Plug2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const Settings = () => {
   const initial = useSettings();
@@ -16,6 +17,39 @@ const Settings = () => {
   const [s, setS] = useState(initial);
   const [posKw, setPosKw] = useState(initial.positive_keywords.join(", "));
   const [negKw, setNegKw] = useState(initial.negative_keywords.join(", "));
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<any>(null);
+
+  const testConnection = async () => {
+    setTesting(true); setTestResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("meta-verify", {
+        body: { ig_account_id: s.ig_account_id, fb_page_id: s.fb_page_id },
+      });
+      if (error) throw error;
+      setTestResult(data);
+      if (data?.ok) {
+        const igOk = !s.ig_account_id || data.instagram?.ok;
+        const fbOk = !s.fb_page_id || data.facebook?.ok;
+        const allOk = data.token_ok && igOk && fbOk;
+        setS(prev => ({ ...prev, api_connected: allOk }));
+        saveSettings({
+          ...s,
+          api_connected: allOk,
+          positive_keywords: posKw.split(",").map(k=>k.trim()).filter(Boolean),
+          negative_keywords: negKw.split(",").map(k=>k.trim()).filter(Boolean),
+        });
+        toast.success(allOk ? "Koneksi Meta Graph API berhasil" : "Token valid tapi ada masalah pada IG/FB ID");
+      } else {
+        toast.error(data?.error || "Koneksi gagal");
+      }
+    } catch (e: any) {
+      setTestResult({ ok: false, error: e.message });
+      toast.error(e.message || "Koneksi gagal");
+    } finally {
+      setTesting(false);
+    }
+  };
 
   const save = () => {
     saveSettings({
