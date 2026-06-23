@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Platform } from "@/lib/types";
 import { addComment } from "@/lib/store";
+import { useSettings } from "@/hooks/useComments";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,9 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Upload, FileSpreadsheet, Save, ArrowRight, X } from "lucide-react";
+import { Upload, FileSpreadsheet, Save, ArrowRight, X, Download, Loader2 } from "lucide-react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
+import { supabase } from "@/integrations/supabase/client";
 
 const platforms: Platform[] = ["Instagram","Facebook","TikTok","YouTube","X/Twitter"];
 
