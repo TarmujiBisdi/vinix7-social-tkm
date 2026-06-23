@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Platform } from "@/lib/types";
 import { addComment } from "@/lib/store";
+import { useSettings } from "@/hooks/useComments";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,14 +9,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Upload, FileSpreadsheet, Save, ArrowRight, X } from "lucide-react";
+import { Upload, FileSpreadsheet, Save, ArrowRight, X, Download, Loader2 } from "lucide-react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
+import { supabase } from "@/integrations/supabase/client";
 
 const platforms: Platform[] = ["Instagram","Facebook","TikTok","YouTube","X/Twitter"];
 
 const InputData = () => {
   const nav = useNavigate();
+  const settings = useSettings();
   const [form, setForm] = useState({
     platform: "Instagram" as Platform,
     campaign_name: "",
@@ -25,6 +28,40 @@ const InputData = () => {
     likes: 0, views: 0, shares: 0,
   });
   const [preview, setPreview] = useState<any[]>([]);
+  const [fetching, setFetching] = useState(false);
+
+  const fetchFromMeta = async () => {
+    if (!settings.ig_account_id && !settings.fb_page_id) {
+      toast.error("Isi IG Account ID atau FB Page ID di Pengaturan dulu.");
+      return;
+    }
+    setFetching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("meta-fetch-comments", {
+        body: {
+          ig_account_id: settings.ig_account_id,
+          fb_page_id: settings.fb_page_id,
+          media_limit: 5,
+        },
+      });
+      if (error) throw error;
+      if (!data?.ok) throw new Error(data?.error || "Gagal mengambil komentar");
+      const list = data.comments || [];
+      if (list.length === 0) {
+        toast.warning("Tidak ada komentar ditemukan pada postingan terbaru.");
+      } else {
+        for (const c of list) addComment(c);
+        toast.success(`${list.length} komentar berhasil ditarik dari Meta`);
+      }
+      if (data.errors) {
+        Object.entries(data.errors).forEach(([k, v]) => toast.error(`${k}: ${v}`));
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Gagal terhubung ke Meta Graph API");
+    } finally {
+      setFetching(false);
+    }
+  };
 
   const submitManual = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +115,22 @@ const InputData = () => {
   };
 
   return (
+    <div className="space-y-6">
+    <div className="rounded-2xl bg-gradient-hero text-white p-6 shadow-elevated flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div>
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs mb-2 backdrop-blur-sm">
+          <Download className="h-3 w-3" /> Meta Graph API
+        </div>
+        <h2 className="text-xl lg:text-2xl font-bold">Tarik Komentar Otomatis</h2>
+        <p className="text-white/70 text-sm mt-1">
+          Ambil komentar terbaru dari Instagram Business & Facebook Page yang sudah dikonfigurasi.
+          {!settings.api_connected && " Hubungkan dulu di Pengaturan."}
+        </p>
+      </div>
+      <Button onClick={fetchFromMeta} disabled={fetching} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow">
+        {fetching ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Mengambil...</> : <><Download className="h-4 w-4 mr-2" />Tarik dari Meta</>}
+      </Button>
+    </div>
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
       {/* Manual form */}
       <div className="lg:col-span-3 rounded-xl border bg-card p-6 shadow-elegant">
@@ -168,6 +221,7 @@ const InputData = () => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };
