@@ -115,6 +115,22 @@ const InputData = () => {
   };
 
   return (
+    <div className="space-y-6">
+    <div className="rounded-2xl bg-gradient-hero text-white p-6 shadow-elevated flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div>
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs mb-2 backdrop-blur-sm">
+          <Download className="h-3 w-3" /> Meta Graph API
+        </div>
+        <h2 className="text-xl lg:text-2xl font-bold">Tarik Komentar Otomatis</h2>
+        <p className="text-white/70 text-sm mt-1">
+          Ambil komentar terbaru dari Instagram Business & Facebook Page yang sudah dikonfigurasi.
+          {!settings.api_connected && " Hubungkan dulu di Pengaturan."}
+        </p>
+      </div>
+      <Button onClick={fetchFromMeta} disabled={fetching} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow">
+        {fetching ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Mengambil...</> : <><Download className="h-4 w-4 mr-2" />Tarik dari Meta</>}
+      </Button>
+    </div>
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
       {/* Manual form */}
       <div className="lg:col-span-3 rounded-xl border bg-card p-6 shadow-elegant">
