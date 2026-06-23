@@ -18,6 +18,7 @@ const platforms: Platform[] = ["Instagram","Facebook","TikTok","YouTube","X/Twit
 
 const InputData = () => {
   const nav = useNavigate();
+  const settings = useSettings();
   const [form, setForm] = useState({
     platform: "Instagram" as Platform,
     campaign_name: "",
@@ -27,6 +28,40 @@ const InputData = () => {
     likes: 0, views: 0, shares: 0,
   });
   const [preview, setPreview] = useState<any[]>([]);
+  const [fetching, setFetching] = useState(false);
+
+  const fetchFromMeta = async () => {
+    if (!settings.ig_account_id && !settings.fb_page_id) {
+      toast.error("Isi IG Account ID atau FB Page ID di Pengaturan dulu.");
+      return;
+    }
+    setFetching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("meta-fetch-comments", {
+        body: {
+          ig_account_id: settings.ig_account_id,
+          fb_page_id: settings.fb_page_id,
+          media_limit: 5,
+        },
+      });
+      if (error) throw error;
+      if (!data?.ok) throw new Error(data?.error || "Gagal mengambil komentar");
+      const list = data.comments || [];
+      if (list.length === 0) {
+        toast.warning("Tidak ada komentar ditemukan pada postingan terbaru.");
+      } else {
+        for (const c of list) addComment(c);
+        toast.success(`${list.length} komentar berhasil ditarik dari Meta`);
+      }
+      if (data.errors) {
+        Object.entries(data.errors).forEach(([k, v]) => toast.error(`${k}: ${v}`));
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Gagal terhubung ke Meta Graph API");
+    } finally {
+      setFetching(false);
+    }
+  };
 
   const submitManual = (e: React.FormEvent) => {
     e.preventDefault();
