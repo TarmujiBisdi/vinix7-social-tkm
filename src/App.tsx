@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import InputData from "./pages/InputData";
@@ -24,6 +25,7 @@ const App = () => (
       <Toaster />
       <Sonner position="top-right" richColors />
       <BrowserRouter>
+        <ErrorBoundary>
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
@@ -42,6 +44,7 @@ const App = () => (
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </AuthProvider>
+        </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
