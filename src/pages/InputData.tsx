@@ -61,12 +61,13 @@ const InputData = () => {
         const existing = getComments();
         const seen = new Set(existing.map(c => c.external_id).filter(Boolean));
         const fresh = list.filter((c: any) => !c.external_id || !seen.has(c.external_id));
+        const createdAt = new Date().toISOString();
         const normalized = fresh.map((c: any) => ({
           ...c,
-          id: `m_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+          id: `m_${c.external_id || `${Date.now()}_${Math.random().toString(36).slice(2,7)}`}`,
           source: "meta",
           sentiment_status: "belum dianalisis",
-          created_at: new Date().toISOString(),
+          created_at: createdAt,
         }));
         saveComments([...normalized, ...existing]);
         toast.success(`${normalized.length} komentar baru berhasil ditarik dari Meta`);
