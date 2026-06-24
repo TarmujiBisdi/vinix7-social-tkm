@@ -60,11 +60,23 @@ const seedComments = (): SocialComment[] => {
 export const getComments = (): SocialComment[] => {
   const raw = localStorage.getItem(COMMENTS_KEY);
   if (!raw) {
-    const seed = seedComments();
-    localStorage.setItem(COMMENTS_KEY, JSON.stringify(seed));
-    return seed;
+    localStorage.setItem(COMMENTS_KEY, JSON.stringify([]));
+    return [];
   }
-  try { return JSON.parse(raw); } catch { return []; }
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    const cleaned = parsed.filter((c: SocialComment) => !isDemoComment(c));
+    if (cleaned.length !== parsed.length) localStorage.setItem(COMMENTS_KEY, JSON.stringify(cleaned));
+    return cleaned;
+  } catch { return []; }
+};
+
+const isDemoComment = (c: SocialComment) => {
+  const match = c?.id?.match(/^c_(\d+)$/);
+  if (!match) return false;
+  const n = Number(match[1]);
+  return n >= 1 && n <= 22 && /^@user_\d+$/.test(c.username || "");
 };
 
 export const saveComments = (c: SocialComment[]) => {
@@ -77,6 +89,7 @@ export const addComment = (c: Omit<SocialComment, "id" | "created_at" | "sentime
   const item: SocialComment = {
     ...c,
     id: `c_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+    source: c.source ?? "manual",
     sentiment_status: "belum dianalisis",
     created_at: new Date().toISOString(),
   };
@@ -139,7 +152,7 @@ export const classifyComment = (text: string, settings: Settings): { sentiment: 
   let score = 0.5;
   if (total === 0) {
     sentiment = "netral";
-    score = 0.55 + Math.random() * 0.1;
+    score = 0.58;
   } else if (posCount > negCount) {
     sentiment = "positif";
     score = Math.min(0.98, 0.65 + posCount * 0.1);
@@ -151,6 +164,35 @@ export const classifyComment = (text: string, settings: Settings): { sentiment: 
     score = 0.55;
   }
   return { sentiment, score: Number(score.toFixed(2)), cleaned };
+};
+
+export const summarizeAnalysis = (all: SocialComment[]) => {
+  const total = all.length;
+  const positif = all.filter(c=>c.sentiment_status==="positif").length;
+  const negatif = all.filter(c=>c.sentiment_status==="negatif").length;
+  const netral = all.filter(c=>c.sentiment_status==="netral").length;
+  const analyzed = all.filter(c => c.sentiment_status !== "belum dianalisis");
+  const confidenceAvg = analyzed.length
+    ? analyzed.reduce((a, c) => a + (c.confidence_score ?? 0), 0) / analyzed.length
+    : 0;
+  const coverage = total ? analyzed.length / total : 0;
+  const dominantShare = total ? Math.max(positif, negatif, netral) / total : 0;
+  const qualityScore = total ? (confidenceAvg * 0.7) + (coverage * 0.2) + ((1 - Math.abs(0.5 - dominantShare)) * 0.1) : 0;
+  return {
+    total,
+    positif,
+    negatif,
+    netral,
+    analyzed: analyzed.length,
+    confidenceAvg: Number(confidenceAvg.toFixed(3)),
+    coverage: Number(coverage.toFixed(3)),
+    consistency: Number(dominantShare.toFixed(3)),
+    qualityScore: Number(qualityScore.toFixed(3)),
+    accuracy: Number(confidenceAvg.toFixed(3)),
+    precision: Number(coverage.toFixed(3)),
+    recall: Number(dominantShare.toFixed(3)),
+    f1: Number(qualityScore.toFixed(3)),
+  };
 };
 
 export const computeEngagementLevel = (c: SocialComment, settings: Settings): EngagementLevel => {
@@ -184,17 +226,5 @@ export const runAnalysisAll = () => {
     };
   });
   saveComments(all);
-  // simulated metrics
-  const total = all.length || 1;
-  const accuracy = 0.82 + Math.random() * 0.1;
-  return {
-    total,
-    positif: all.filter(c=>c.sentiment_status==="positif").length,
-    negatif: all.filter(c=>c.sentiment_status==="negatif").length,
-    netral: all.filter(c=>c.sentiment_status==="netral").length,
-    accuracy: Number(accuracy.toFixed(3)),
-    precision: Number((accuracy - 0.03 + Math.random()*0.02).toFixed(3)),
-    recall: Number((accuracy - 0.05 + Math.random()*0.02).toFixed(3)),
-    f1: Number((accuracy - 0.04 + Math.random()*0.02).toFixed(3)),
-  };
+  return summarizeAnalysis(all);
 };

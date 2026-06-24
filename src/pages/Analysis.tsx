@@ -104,10 +104,10 @@ const Analysis = () => {
           </div>
           <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Akurasi", value: `${(result.accuracy*100).toFixed(1)}%` },
-              { label: "Precision", value: `${(result.precision*100).toFixed(1)}%` },
-              { label: "Recall", value: `${(result.recall*100).toFixed(1)}%` },
-              { label: "F1-Score", value: `${(result.f1*100).toFixed(1)}%` },
+              { label: "Rata-rata Confidence", value: `${(result.confidenceAvg*100).toFixed(1)}%` },
+              { label: "Cakupan Analisis", value: `${(result.coverage*100).toFixed(1)}%` },
+              { label: "Dominasi Sentimen", value: `${(result.consistency*100).toFixed(1)}%` },
+              { label: "Skor Kualitas", value: `${(result.qualityScore*100).toFixed(1)}%` },
             ].map(m => (
               <div key={m.label} className="rounded-lg border bg-secondary/40 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{m.label}</p>
@@ -115,7 +115,7 @@ const Analysis = () => {
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground mt-4 italic">* Metrik akurasi, precision, recall & F1 ditampilkan sebagai simulasi representasi model Naive Bayes pada prototype ini.</p>
+          <p className="text-xs text-muted-foreground mt-4 italic">* Angka dihitung dari komentar yang benar-benar tersimpan dan hasil confidence klasifikasi saat ini, bukan data dummy.</p>
           <div className="mt-5 flex flex-col sm:flex-row gap-3">
             <Button onClick={() => nav("/hasil-klasifikasi")} className="bg-gradient-primary text-white">
               Lihat Hasil Klasifikasi <ArrowRight className="h-4 w-4 ml-2" />
