@@ -23,15 +23,32 @@ const Settings = () => {
   const testConnection = async () => {
     setTesting(true); setTestResult(null);
     try {
-      const { data, error } = await supabase.functions.invoke("meta-verify", {
-        body: { ig_account_id: s.ig_account_id, fb_page_id: s.fb_page_id },
-      });
-      if (error) throw error;
+      let data: any = null;
+      let invokeErr: any = null;
+      try {
+        const res = await supabase.functions.invoke("meta-verify", {
+          body: { ig_account_id: s.ig_account_id, fb_page_id: s.fb_page_id },
+        });
+        data = res.data;
+        invokeErr = res.error;
+      } catch (err: any) {
+        invokeErr = err;
+      }
+      // If edge function returned non-2xx, supabase-js may surface error but still include JSON body
+      if (!data && invokeErr?.context?.json) {
+        try { data = await invokeErr.context.json(); } catch {}
+      }
+      if (!data) {
+        const msg = invokeErr?.message || "Tidak ada respon dari server";
+        setTestResult({ ok: false, error: String(msg) });
+        toast.error(String(msg));
+        return;
+      }
       setTestResult(data);
       if (data?.ok) {
         const igOk = !s.ig_account_id || data.instagram?.ok;
         const fbOk = !s.fb_page_id || data.facebook?.ok;
-        const allOk = data.token_ok && igOk && fbOk;
+        const allOk = !!(data.token_ok && igOk && fbOk);
         setS(prev => ({ ...prev, api_connected: allOk }));
         saveSettings({
           ...s,
@@ -41,11 +58,13 @@ const Settings = () => {
         });
         toast.success(allOk ? "Koneksi Meta Graph API berhasil" : "Token valid tapi ada masalah pada IG/FB ID");
       } else {
-        toast.error(data?.error || "Koneksi gagal");
+        const msg = typeof data?.error === "string" ? data.error : "Koneksi gagal";
+        toast.error(msg);
       }
     } catch (e: any) {
-      setTestResult({ ok: false, error: e.message });
-      toast.error(e.message || "Koneksi gagal");
+      const msg = e?.message ? String(e.message) : "Koneksi gagal";
+      setTestResult({ ok: false, error: msg });
+      toast.error(msg);
     } finally {
       setTesting(false);
     }
