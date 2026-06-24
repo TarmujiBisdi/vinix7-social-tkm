@@ -133,11 +133,12 @@ Deno.serve(async (req) => {
     const mediaLimit = Math.min(Math.max(parseInt(body.media_limit) || 5, 1), 10);
 
     const pages = await discoverPages(token);
-    const selectedPage = fb
-      ? pages.find((p) => p.id === fb)
-      : pages.find((p) => p.instagram_business_account?.id === ig) || pages[0];
-    const effectiveFb = fb || selectedPage?.id || '';
-    const effectiveIg = ig || selectedPage?.instagram_business_account?.id || '';
+    const selectedPage =
+      pages.find((p) => fb && p.id === fb) ||
+      pages.find((p) => ig && p.instagram_business_account?.id === ig) ||
+      pages[0];
+    const effectiveFb = selectedPage?.id || fb || '';
+    const effectiveIg = selectedPage?.instagram_business_account?.id || ig || '';
     const pageToken = selectedPage?.access_token || token;
 
     if (!effectiveIg && !effectiveFb) {
