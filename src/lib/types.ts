@@ -4,6 +4,8 @@ export type EngagementLevel = "Rendah" | "Sedang" | "Tinggi";
 
 export interface SocialComment {
   id: string;
+  external_id?: string;
+  source?: "manual" | "upload" | "meta";
   platform: Platform;
   campaign_name: string;
   post_date: string;

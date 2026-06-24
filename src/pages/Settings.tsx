@@ -11,6 +11,12 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
+const asText = (value: unknown, fallback = "-") => {
+  if (typeof value === "string") return value;
+  if (value == null) return fallback;
+  try { return JSON.stringify(value); } catch { return fallback; }
+};
+
 const Settings = () => {
   const initial = useSettings();
   const { user } = useAuth();
@@ -48,14 +54,17 @@ const Settings = () => {
       if (data?.ok) {
         const igOk = !s.ig_account_id || data.instagram?.ok;
         const fbOk = !s.fb_page_id || data.facebook?.ok;
-        const allOk = !!(data.token_ok && igOk && fbOk);
-        setS(prev => ({ ...prev, api_connected: allOk }));
-        saveSettings({
+        const allOk = !!(data.token_ok && igOk && fbOk && data.can_fetch !== false);
+        const nextSettings = {
           ...s,
+          ig_account_id: !s.ig_account_id && data.instagram?.id ? data.instagram.id : s.ig_account_id,
+          fb_page_id: !s.fb_page_id && data.facebook?.id ? data.facebook.id : s.fb_page_id,
           api_connected: allOk,
           positive_keywords: posKw.split(",").map(k=>k.trim()).filter(Boolean),
           negative_keywords: negKw.split(",").map(k=>k.trim()).filter(Boolean),
-        });
+        };
+        setS(prev => ({ ...prev, ...nextSettings }));
+        saveSettings(nextSettings);
         toast.success(allOk ? "Koneksi Meta Graph API berhasil" : "Token valid tapi ada masalah pada IG/FB ID");
       } else {
         const msg = typeof data?.error === "string" ? data.error : "Koneksi gagal";
@@ -156,18 +165,55 @@ const Settings = () => {
           <div className="mt-4 space-y-2 rounded-lg border bg-secondary/40 p-3 text-sm">
             <div className="flex items-center gap-2">
               {testResult.token_ok ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
-              <span className="font-semibold">Token: {testResult.token_ok ? `Valid (${testResult.account?.name})` : (testResult.error || "Tidak valid")}</span>
+              <span className="font-semibold">Token: {testResult.token_ok ? `Valid (${asText(testResult.account?.name)})` : asText(testResult.error, "Tidak valid")}</span>
             </div>
             {testResult.instagram && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-start gap-2">
                 {testResult.instagram.ok ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
-                <span>Instagram: {testResult.instagram.ok ? `@${testResult.instagram.username} (${testResult.instagram.name})` : testResult.instagram.error}</span>
+                <span>
+                  Instagram: {testResult.instagram.ok ? `@${asText(testResult.instagram.username, "ig")} (${asText(testResult.instagram.name)}) — ID ${asText(testResult.instagram.id)}` : asText(testResult.instagram.error)}
+                  {testResult.instagram.suggestion && <span className="block text-xs text-muted-foreground">Saran: {asText(testResult.instagram.suggestion)}</span>}
+                </span>
               </div>
             )}
             {testResult.facebook && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-start gap-2">
                 {testResult.facebook.ok ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
-                <span>Facebook: {testResult.facebook.ok ? `${testResult.facebook.name} (${testResult.facebook.category})` : testResult.facebook.error}</span>
+                <span>
+                  Facebook: {testResult.facebook.ok ? `${asText(testResult.facebook.name)} (${asText(testResult.facebook.category)}) — ID ${asText(testResult.facebook.id)}` : asText(testResult.facebook.error)}
+                  {testResult.facebook.suggestion && <span className="block text-xs text-muted-foreground">Saran: {asText(testResult.facebook.suggestion)}</span>}
+                </span>
+              </div>
+            )}
+            {testResult.warning && <p className="text-xs text-destructive">{asText(testResult.warning)}</p>}
+            {Array.isArray(testResult.discovered_pages) && testResult.discovered_pages.length > 0 && (
+              <div className="mt-3 rounded-md border bg-background/70 p-3">
+                <p className="font-semibold mb-2">Akun yang terdeteksi dari token</p>
+                <div className="space-y-2">
+                  {testResult.discovered_pages.map((page: any) => (
+                    <div key={page.id} className="flex flex-col gap-2 rounded-md border bg-card p-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="font-medium">{asText(page.name)} <span className="text-xs text-muted-foreground">FB ID: {asText(page.id)}</span></p>
+                        {page.instagram_business_account ? (
+                          <p className="text-xs text-muted-foreground">IG @{asText(page.instagram_business_account.username, "-")} — ID: {asText(page.instagram_business_account.id)}</p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">Tidak ada Instagram Business yang tersambung ke Page ini.</p>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setS(prev => ({
+                          ...prev,
+                          fb_page_id: page.id,
+                          ig_account_id: page.instagram_business_account?.id || prev.ig_account_id,
+                        }))}
+                      >
+                        Pakai ID ini
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
