@@ -25,6 +25,7 @@ const App = () => (
       <Toaster />
       <Sonner position="top-right" richColors />
       <BrowserRouter>
+        <ErrorBoundary>
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
