@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Platform } from "@/lib/types";
-import { addComment } from "@/lib/store";
+import { addComment, getComments, saveComments } from "@/lib/store";
 import { useSettings } from "@/hooks/useComments";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -31,30 +31,49 @@ const InputData = () => {
   const [fetching, setFetching] = useState(false);
 
   const fetchFromMeta = async () => {
-    if (!settings.ig_account_id && !settings.fb_page_id) {
-      toast.error("Isi IG Account ID atau FB Page ID di Pengaturan dulu.");
-      return;
-    }
     setFetching(true);
     try {
-      const { data, error } = await supabase.functions.invoke("meta-fetch-comments", {
-        body: {
-          ig_account_id: settings.ig_account_id,
-          fb_page_id: settings.fb_page_id,
-          media_limit: 5,
-        },
-      });
-      if (error) throw error;
+      let data: any = null;
+      let invokeErr: any = null;
+      try {
+        const res = await supabase.functions.invoke("meta-fetch-comments", {
+          body: {
+            ig_account_id: settings.ig_account_id,
+            fb_page_id: settings.fb_page_id,
+            media_limit: 5,
+          },
+        });
+        data = res.data;
+        invokeErr = res.error;
+      } catch (err: any) {
+        invokeErr = err;
+      }
+      if (!data && invokeErr?.context?.json) {
+        try { data = await invokeErr.context.json(); } catch {}
+      }
+      if (!data && invokeErr) throw invokeErr;
       if (!data?.ok) throw new Error(data?.error || "Gagal mengambil komentar");
       const list = data.comments || [];
       if (list.length === 0) {
-        toast.warning("Tidak ada komentar ditemukan pada postingan terbaru.");
+        const detail = data.errors ? ` Detail: ${Object.values(data.errors).join("; ")}` : "";
+        toast.warning(`Tidak ada komentar ditemukan pada postingan terbaru.${detail}`);
       } else {
-        for (const c of list) addComment(c);
-        toast.success(`${list.length} komentar berhasil ditarik dari Meta`);
+        const existing = getComments();
+        const seen = new Set(existing.map(c => c.external_id).filter(Boolean));
+        const fresh = list.filter((c: any) => !c.external_id || !seen.has(c.external_id));
+        const normalized = fresh.map((c: any) => ({
+          ...c,
+          id: `m_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+          source: "meta",
+          sentiment_status: "belum dianalisis",
+          created_at: new Date().toISOString(),
+        }));
+        saveComments([...normalized, ...existing]);
+        toast.success(`${normalized.length} komentar baru berhasil ditarik dari Meta`);
+        if (list.length !== normalized.length) toast.info(`${list.length - normalized.length} komentar duplikat dilewati`);
       }
       if (data.errors) {
-        Object.entries(data.errors).forEach(([k, v]) => toast.error(`${k}: ${v}`));
+        Object.entries(data.errors).forEach(([k, v]) => toast.error(`${k}: ${String(v)}`));
       }
     } catch (e: any) {
       toast.error(e.message || "Gagal terhubung ke Meta Graph API");
