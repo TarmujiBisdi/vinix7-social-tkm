@@ -16,47 +16,6 @@ export const defaultSettings: Settings = {
   api_connected: false,
 };
 
-const seedComments = (): SocialComment[] => {
-  const platforms = ["Instagram","Facebook","TikTok","YouTube","X/Twitter"] as const;
-  const campaigns = ["Launch Aurum Series","Promo Akhir Tahun","Brand Awareness Q4","Edukasi Produk","Kampanye CSR"];
-  const samples = [
-    { t: "Kontennya sangat menarik dan informatif, mantap!", l: 320, v: 5400, s: 25 },
-    { t: "Pelayanannya lambat dan kurang responsif, kecewa.", l: 12, v: 2200, s: 1 },
-    { t: "Informasi yang diberikan cukup jelas.", l: 88, v: 3100, s: 5 },
-    { t: "Desain visualnya keren, saya suka banget!", l: 540, v: 12800, s: 60 },
-    { t: "Saya kecewa karena respon admin lama sekali.", l: 8, v: 1800, s: 0 },
-    { t: "Postingan ini membahas produk terbaru.", l: 42, v: 2800, s: 3 },
-    { t: "Produknya recommended, cepat sampai dan ramah!", l: 410, v: 9200, s: 38 },
-    { t: "Harganya mahal banget, kualitas biasa saja.", l: 5, v: 1500, s: 1 },
-    { t: "Bagus penjelasannya, jadi paham fitur baru.", l: 220, v: 6700, s: 18 },
-    { t: "Aplikasi sering error, ribet dipakainya.", l: 3, v: 980, s: 0 },
-    { t: "Update terbaru tersedia minggu depan.", l: 60, v: 2100, s: 4 },
-    { t: "Mantap, layanan customer service sangat ramah.", l: 290, v: 7100, s: 22 },
-    { t: "Pengiriman lambat, packing juga jelek.", l: 6, v: 1100, s: 0 },
-    { t: "Konten edukatif, terima kasih sudah berbagi.", l: 175, v: 5200, s: 14 },
-    { t: "Webinar besok jam 7 malam, jangan lupa.", l: 33, v: 1900, s: 2 },
-    { t: "Top sekali kontennya, ditunggu series berikutnya!", l: 620, v: 15400, s: 78 },
-    { t: "Pelayanan kasar, saya komplain tidak ditanggapi.", l: 2, v: 800, s: 0 },
-    { t: "Tim marketingnya hebat, kerja cepat dan rapi.", l: 380, v: 8500, s: 30 },
-    { t: "Saya rasa fitur ini belum cukup membantu.", l: 18, v: 1700, s: 1 },
-    { t: "Promo menarik, harga juga terjangkau.", l: 260, v: 6800, s: 20 },
-    { t: "Acara kemarin biasa saja, tidak ada yang spesial.", l: 15, v: 1400, s: 2 },
-    { t: "Produk gagal pakai, mengecewakan.", l: 4, v: 950, s: 0 },
-  ];
-  const now = Date.now();
-  return samples.map((s, i) => ({
-    id: `c_${i+1}`,
-    platform: platforms[i % platforms.length],
-    campaign_name: campaigns[i % campaigns.length],
-    post_date: new Date(now - (i * 86400000) - Math.random()*86400000).toISOString().slice(0,10),
-    username: `@user_${i+1}`,
-    comment_text: s.t,
-    likes: s.l, views: s.v, shares: s.s,
-    sentiment_status: "belum dianalisis",
-    created_at: new Date(now - i*3600000).toISOString(),
-  }));
-};
-
 export const getComments = (): SocialComment[] => {
   const raw = localStorage.getItem(COMMENTS_KEY);
   if (!raw) {
