@@ -23,6 +23,13 @@ async function g(path: string, token: string, query: Record<string, string | num
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
+    const authHeader = req.headers.get('Authorization') || '';
+    const jwt = authHeader.replace(/^Bearer\s+/i, '').trim();
+    if (!jwt) return json({ ok: false, error: 'Unauthorized' }, 401);
+    const authClient = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!);
+    const { data: userData, error: userErr } = await authClient.auth.getUser(jwt);
+    if (userErr || !userData?.user) return json({ ok: false, error: 'Unauthorized' }, 401);
+
     const body = await req.json().catch(() => ({} as any));
     const igIn = (body.ig_account_id || '').toString().trim();
     const fbIn = (body.fb_page_id || '').toString().trim();
