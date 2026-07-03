@@ -40,6 +40,7 @@ const InputData = () => {
           body: {
             ig_account_id: settings.ig_account_id,
             fb_page_id: settings.fb_page_id,
+            access_token: settings.meta_api_token,
             media_limit: 5,
           },
         });

@@ -55,18 +55,18 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    const token = Deno.env.get('META_GRAPH_TOKEN');
+    const body = await req.json().catch(() => ({} as any));
+    const ig = (body.ig_account_id || '').toString().trim();
+    const fb = (body.fb_page_id || '').toString().trim();
+    const bodyToken = (body.access_token || '').toString().trim();
+    const token = bodyToken || Deno.env.get('META_GRAPH_TOKEN') || '';
     if (!token) {
       return json({
         ok: false,
         token_ok: false,
-        error: 'META_GRAPH_TOKEN belum dikonfigurasi di backend secret.',
+        error: 'Meta Graph API Token belum diisi. Masukkan token di halaman Pengaturan.',
       });
     }
-
-    const body = await req.json().catch(() => ({} as any));
-    const ig = (body.ig_account_id || '').toString().trim();
-    const fb = (body.fb_page_id || '').toString().trim();
 
     const result: any = {
       ok: true,
