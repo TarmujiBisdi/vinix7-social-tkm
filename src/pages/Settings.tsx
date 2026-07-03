@@ -33,7 +33,11 @@ const Settings = () => {
       let invokeErr: any = null;
       try {
         const res = await supabase.functions.invoke("meta-verify", {
-          body: { ig_account_id: s.ig_account_id, fb_page_id: s.fb_page_id },
+          body: {
+            ig_account_id: s.ig_account_id,
+            fb_page_id: s.fb_page_id,
+            access_token: s.meta_api_token,
+          },
         });
         data = res.data;
         invokeErr = res.error;
