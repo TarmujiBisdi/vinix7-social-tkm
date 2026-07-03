@@ -1,5 +1,6 @@
 // Verifies Meta Graph API token and discovers available Facebook Pages / Instagram Business accounts.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const GRAPH = 'https://graph.facebook.com/v21.0';
 
@@ -53,6 +54,17 @@ function publicPage(page: MetaPage) {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+
+  // Require an authenticated caller
+  const authHeader = req.headers.get('Authorization') || '';
+  const jwt = authHeader.replace(/^Bearer\s+/i, '').trim();
+  if (!jwt) return json({ ok: false, error: 'Unauthorized' }, 401);
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+  );
+  const { data: userData, error: userErr } = await supabase.auth.getUser(jwt);
+  if (userErr || !userData?.user) return json({ ok: false, error: 'Unauthorized' }, 401);
 
   try {
     const body = await req.json().catch(() => ({} as any));
