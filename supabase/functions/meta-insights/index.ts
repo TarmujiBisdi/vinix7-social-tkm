@@ -22,12 +22,12 @@ async function g(path: string, token: string, query: Record<string, string | num
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
-    const token = Deno.env.get('META_GRAPH_TOKEN');
-    if (!token) return json({ ok: false, error: 'META_GRAPH_TOKEN belum dikonfigurasi.' });
-
     const body = await req.json().catch(() => ({} as any));
     const igIn = (body.ig_account_id || '').toString().trim();
     const fbIn = (body.fb_page_id || '').toString().trim();
+    const bodyToken = (body.access_token || '').toString().trim();
+    const token = bodyToken || Deno.env.get('META_GRAPH_TOKEN') || '';
+    if (!token) return json({ ok: false, error: 'Meta Graph API Token belum diisi. Masukkan token di halaman Pengaturan.' });
     const limit = Math.min(Math.max(parseInt(body.media_limit) || 10, 1), 25);
 
     // Discover pages
