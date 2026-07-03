@@ -21,7 +21,7 @@ export const Sidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
   const { pathname } = useLocation();
   const { logout, user } = useAuth();
   const nav = useNavigate();
-  const handleLogout = () => { logout(); nav("/login"); };
+  const handleLogout = async () => { await logout(); nav("/login"); };
 
   return (
     <aside className="flex h-full w-64 flex-col bg-sidebar text-sidebar-foreground">
