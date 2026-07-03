@@ -155,9 +155,22 @@ const Settings = () => {
             <Switch checked={s.api_connected} disabled />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2"><Label>Instagram Business Account ID</Label><Input value={s.ig_account_id} onChange={e=>setS({...s, ig_account_id: e.target.value})} placeholder="178414xxxx" /></div>
-          <div className="space-y-2"><Label>Facebook Page ID</Label><Input value={s.fb_page_id} onChange={e=>setS({...s, fb_page_id: e.target.value})} placeholder="102345xxxx" /></div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Meta Graph API Access Token</Label>
+            <Input
+              type="password"
+              value={s.meta_api_token}
+              onChange={e=>setS({...s, meta_api_token: e.target.value})}
+              placeholder="EAAG... (paste token panjang dari Meta Graph API Explorer)"
+              autoComplete="off"
+            />
+            <p className="text-xs text-muted-foreground">Token disimpan di browser Anda (localStorage) dan dikirim ke edge function saat memanggil Meta Graph API.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2"><Label>Instagram Business Account ID</Label><Input value={s.ig_account_id} onChange={e=>setS({...s, ig_account_id: e.target.value})} placeholder="178414xxxx" /></div>
+            <div className="space-y-2"><Label>Facebook Page ID</Label><Input value={s.fb_page_id} onChange={e=>setS({...s, fb_page_id: e.target.value})} placeholder="102345xxxx" /></div>
+          </div>
         </div>
         <div className="mt-4 flex flex-col sm:flex-row gap-3">
           <Button onClick={testConnection} disabled={testing} className="bg-accent hover:bg-accent/90 text-accent-foreground">
