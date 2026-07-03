@@ -1,5 +1,6 @@
 // Aggregate live engagement metrics from Meta Graph API (FB Page + IG Business)
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const GRAPH = 'https://graph.facebook.com/v21.0';
 
