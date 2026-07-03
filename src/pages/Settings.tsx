@@ -176,7 +176,7 @@ const Settings = () => {
           <Button onClick={testConnection} disabled={testing} className="bg-accent hover:bg-accent/90 text-accent-foreground">
             {testing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Menguji...</> : <><Plug2 className="h-4 w-4 mr-2" />Test Koneksi</>}
           </Button>
-          <p className="text-xs text-muted-foreground self-center">Token Meta Graph API disimpan aman di backend (server-side secret), bukan di browser.</p>
+          <p className="text-xs text-muted-foreground self-center">Klik untuk memverifikasi token, mendeteksi Page/IG, dan menyimpan koneksi.</p>
         </div>
         {testResult && (
           <div className="mt-4 space-y-2 rounded-lg border bg-secondary/40 p-3 text-sm">
