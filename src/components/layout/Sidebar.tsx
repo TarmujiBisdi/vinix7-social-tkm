@@ -27,13 +27,8 @@ export const Sidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
   return (
     <aside className="flex h-full w-64 flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-accent shadow-glow">
-          <Sparkles className="h-5 w-5 text-white" />
-        </div>
-        <div className="flex flex-col leading-tight">
-          <span className="text-sm font-bold tracking-tight text-white">Vinix Seven Aurum</span>
-          <span className="text-[10px] uppercase tracking-widest text-sidebar-foreground/60">Sentiment Suite</span>
-        </div>
+      <div className="flex items-center justify-center px-4 py-5 border-b border-sidebar-border bg-white/95">
+        <img src={logo} alt="Vinix7 Analis Sentimen" className="h-14 w-auto object-contain" />
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">Menu Utama</p>
