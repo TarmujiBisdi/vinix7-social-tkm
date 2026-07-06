@@ -184,6 +184,24 @@ const Settings = () => {
               {testResult.token_ok ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
               <span className="font-semibold">Token: {testResult.token_ok ? `Valid (${asText(testResult.account?.name)})` : asText(testResult.error, "Tidak valid")}</span>
             </div>
+            {testResult.discovery_warning && (
+              <div className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2">
+                <XCircle className="h-4 w-4 text-destructive mt-0.5" />
+                <div className="text-xs">
+                  <p className="font-semibold text-destructive">Gagal membaca daftar Facebook Page:</p>
+                  <p>{asText(testResult.discovery_warning)}</p>
+                  <p className="mt-1 text-muted-foreground">
+                    Kemungkinan penyebab: token tidak punya permission <code>pages_show_list</code> / <code>pages_read_engagement</code>, atau token dari User Access Token biasa (bukan dari App yang punya izin Meta Business). Buka Graph API Explorer → pilih App → tambahkan permission di atas → generate token baru.
+                  </p>
+                </div>
+              </div>
+            )}
+            {testResult.token_ok && Array.isArray(testResult.discovered_pages) && testResult.discovered_pages.length === 0 && !testResult.discovery_warning && (
+              <div className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2 text-xs">
+                <XCircle className="h-4 w-4 text-destructive mt-0.5" />
+                <p>Token valid, tapi tidak ada Facebook Page yang bisa diakses. Pastikan akun Anda adalah admin Page dan permission <code>pages_show_list</code> diberikan saat generate token.</p>
+              </div>
+            )}
             {testResult.instagram && (
               <div className="flex items-start gap-2">
                 {testResult.instagram.ok ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
@@ -233,6 +251,10 @@ const Settings = () => {
                 </div>
               </div>
             )}
+            <details className="mt-3">
+              <summary className="cursor-pointer text-xs text-muted-foreground">Lihat respon mentah (untuk debug)</summary>
+              <pre className="mt-2 max-h-64 overflow-auto rounded bg-background/70 p-2 text-[10px]">{JSON.stringify(testResult, null, 2)}</pre>
+            </details>
           </div>
         )}
         <div className="mt-4 flex gap-2 rounded-lg border border-dashed bg-secondary/50 p-3 text-xs text-muted-foreground">
