@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { Sparkles, Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import logo from "@/assets/vinix7-logo.png";
 
 const Login = () => {
   const { user, isAuthReady, login, signup } = useAuth();
@@ -48,9 +49,9 @@ const Login = () => {
         <div className="absolute inset-0 opacity-20" style={{
           backgroundImage: "radial-gradient(circle at 20% 20%, hsl(262 83% 58% / .6), transparent 40%), radial-gradient(circle at 80% 80%, hsl(217 100% 50% / .4), transparent 40%)"
         }} />
-        <div className="relative flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm shadow-glow">
-            <Sparkles className="h-6 w-6 text-accent" />
+        <div className="relative flex items-center gap-4">
+          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white p-1.5 shadow-glow">
+            <img src={logo} alt="Vinix7" className="h-full w-full object-contain" />
           </div>
           <div>
             <p className="text-lg font-bold">PT Vinix Seven Aurum</p>
@@ -85,10 +86,8 @@ const Login = () => {
 
       <div className="flex flex-col justify-center px-6 py-12 lg:px-16">
         <div className="mx-auto w-full max-w-md">
-          <div className="lg:hidden mb-8 flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-accent">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
+          <div className="lg:hidden mb-8 flex items-center gap-3">
+            <img src={logo} alt="Vinix7" className="h-12 w-auto object-contain" />
             <p className="font-bold">PT Vinix Seven Aurum</p>
           </div>
           <h1 className="text-3xl font-bold tracking-tight">
