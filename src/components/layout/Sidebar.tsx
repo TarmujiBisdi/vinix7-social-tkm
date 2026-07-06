@@ -1,9 +1,10 @@
 import { NavLink, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, Upload, Brain, MessageSquare, Tags, FileText, Settings as SettingsIcon, LogOut, Sparkles, Gauge, FlaskConical,
+  LayoutDashboard, Upload, Brain, MessageSquare, Tags, FileText, Settings as SettingsIcon, LogOut, Gauge, FlaskConical,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import logo from "@/assets/vinix7-logo.png";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
