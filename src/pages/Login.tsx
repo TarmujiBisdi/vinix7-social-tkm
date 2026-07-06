@@ -49,9 +49,9 @@ const Login = () => {
         <div className="absolute inset-0 opacity-20" style={{
           backgroundImage: "radial-gradient(circle at 20% 20%, hsl(262 83% 58% / .6), transparent 40%), radial-gradient(circle at 80% 80%, hsl(217 100% 50% / .4), transparent 40%)"
         }} />
-        <div className="relative flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm shadow-glow">
-            <Sparkles className="h-6 w-6 text-accent" />
+        <div className="relative flex items-center gap-4">
+          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white p-1.5 shadow-glow">
+            <img src={logo} alt="Vinix7" className="h-full w-full object-contain" />
           </div>
           <div>
             <p className="text-lg font-bold">PT Vinix Seven Aurum</p>
