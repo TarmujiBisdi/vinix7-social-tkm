@@ -26,7 +26,6 @@ export const Sidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
 
   return (
     <aside className="flex h-full w-64 flex-col bg-sidebar text-sidebar-foreground">
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border">
       <div className="flex items-center justify-center px-4 py-5 border-b border-sidebar-border bg-white/95">
         <img src={logo} alt="Vinix7 Analis Sentimen" className="h-14 w-auto object-contain" />
       </div>
