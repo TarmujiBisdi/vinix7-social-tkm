@@ -50,7 +50,7 @@ const Login = () => {
           backgroundImage: "radial-gradient(circle at 20% 20%, hsl(262 83% 58% / .6), transparent 40%), radial-gradient(circle at 80% 80%, hsl(217 100% 50% / .4), transparent 40%)"
         }} />
         <div className="relative flex items-center gap-4">
-          <div className="flex items-center justify-center rounded-xl bg-white p-2 shadow-glow">
+          <div className="flex items-center justify-center rounded-xl bg-[hsl(217,70%,14%)] p-2 shadow-glow">
             <img src={logo} alt="Vinix7" className="h-10 w-auto object-contain" />
           </div>
           <div>
