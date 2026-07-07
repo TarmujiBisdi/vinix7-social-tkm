@@ -87,7 +87,7 @@ const Login = () => {
       <div className="flex flex-col justify-center px-6 py-12 lg:px-16">
         <div className="mx-auto w-full max-w-md">
           <div className="lg:hidden mb-8 flex items-center gap-3">
-            <img src={logo} alt="Vinix7" className="h-12 w-auto object-contain" />
+            <img src={logo} alt="Vinix7" className="h-8 w-auto object-contain" />
             <p className="font-bold">PT Vinix Seven Aurum</p>
           </div>
           <h1 className="text-3xl font-bold tracking-tight">
